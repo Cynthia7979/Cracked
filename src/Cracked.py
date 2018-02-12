@@ -25,7 +25,9 @@ class GameStatus:
 class Mob:
     def __init__(self):
         self.blood = 0
-        self.images = {'left':(),'right':(),'attack':(),'die':()}
+        self.images = {'left':[],'right':[],'attack':[],'die':[]}
         self.pos = ()
+
+
 if __name__ == '__main__':
     GameStatus().update({'scene':'opening'})
