@@ -7,17 +7,15 @@ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 def logged(class_):
     class_.logger = logging.getLogger(class_.__name__)
+    class_.logger.debug('From decorator "logged": name of logger: {name}'.format(name=class_.__name__))
     return class_
 
 
 @logged
 class GameStatus:
     def __init__(self):
-        self.logger.debug('Name of the logger: {0}'.format(self.__class__.__name__))
         self.scene = 'loading'
         self.__dict__.update({
-            'floor': 1,
-            'scene': 'loading',
         })
         self.logger.warn('Please check the realization of initialization for class GameStatus')
 
@@ -31,7 +29,9 @@ class GameStatus:
 
 
 @logged
-class Mob(metaclass=abc.ABCMeta):
+class Mob:
+    __metaclass__ = abc.ABCMeta
+
     def __init__(self):
         self.blood = 0
         self.images = {'left': [], 'right': [], 'attack': [], 'die': []}
@@ -44,18 +44,68 @@ class Mob(metaclass=abc.ABCMeta):
 
 
 @logged
-class Skill(metaclass=abc.ABCMeta):
+class Skill:
+    __metaclass__ = abc.ABCMeta
+
     def __init__(self):
-        self.image = None
+        self.image_surf = None
+        self.image_rect = None
         self.buff = None
-        self.harm = 0
+        self.harm = 0  # Maybe later I'll add 'count & minus', like -1 blood/s
+        # Maybe later I'll add cold down time
 
     @abc.abstractmethod
-    def activate(self):
+    def activate(self, player_status):
         """Activate the skill"""
         pass
 
 
+@logged
+class PlayerSkill(Skill):
+    def __init__(self, image, buff, harm=0):
+        """Object given to 'image' attribute should be a tuple
+        with a Surface instance at first place and a Rect instance second.
+        Or a string, which is a path leading to an existing image.
+
+        Creating instance of PlayerSkill should be something like this:
+            PlayerSkill((Surface, Rect), Buff, int)
+        or
+            PlayerSkill(str, Buff, int)
+        """
+        if isinstance(image, str):
+            try:
+                img_surf, img_rect = open_file('image', image)
+            except pygame.error:
+                img_surf, img_rect = pygame.Surface(), pygame.Rect()
+                self.logger.error('String given to PlayerSkill while creating an instance\
+                                   was not a complete path or had lead to a not existing file: {string}. \
+                                  This could cause display errors.'.format(string=image))
+        elif isinstance(image, tuple):
+            if isinstance(image[0], pygame.Surface):
+                img_surf = image[0]
+            else:
+                img_surf = pygame.Surface()
+                self.logger.error("The first object of the tuple given to 'image' attribute is not a \
+                                  pygame.Surface instance. This could cause display errors.")
+            if isinstance(image[1], pygame.Rect):
+                img_rect = image[1]
+            else:
+                img_rect = pygame.Rect
+                self.logger.error("The second object of the tuple given to 'image' attribute is not a \
+                                pygame.Rect instance. This could cause clicking errors.")
+
+        super(PlayerSkill, self).__init__()
+        self.image_surf = img_surf
+        self.image_rect = img_rect
+        self.buff = buff
+        self.harm = harm
+
+    def activate(self, player_status):
+        player_status.add_buff(self.buff)
+        player_status.minus_blood(self.harm)
+
+
+@logged
 class Buff:
     def __init__(self, name, image, time,
                  blood_effect=0,
@@ -65,5 +115,25 @@ class Buff:
         self.image = image
         self.time = time
         self.effect = {'blood': blood_effect, 'speed': speed_effect, 'harm': harm_effect}
+
+
+class PlayerStatus:
+    def __init__(self):
+        pass  # later adding attributes
+
+"""=========Under this line it's functions========="""
+
+
+def open_file(mode, path):
+    if mode == 'image':
+        image_surface = pygame.image.load(path)
+        image_rect = image_surface.get_rect()
+        return image_surface, image_rect
+    elif mode == 'text':
+        f = open(path)
+        text = f.read()
+        return text
+
+
 if __name__ == '__main__':
-    GameStatus().update({'scene': 'opening'})
+    GameStatus().update({})
