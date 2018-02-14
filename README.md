@@ -1,6 +1,6 @@
 **Cracked**, a game with imagination which players need to kill monsters in different floors.
  It's called Cracked because all monsters are *creepy and not understandable*.
-
+[![Example of mob \'butterfly\'](https://s13.postimg.org/hlvyhh6fr/combine3.png)](https://postimg.org/image/9gdwjbi6r/)
 Concepts in game:
 ---
 1. ***Abstract position***.
