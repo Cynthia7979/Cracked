@@ -21,7 +21,9 @@ class GameStatus:
 
     def update(self, data):
         self.logger.warn('This may not be a very good realization for updating')
-        assert isinstance(data, dict), 'The argument given to method update() is not a dictionary'
+        if not isinstance(data, dict):
+            self.logger.error('The argument given to method update() is not a dictionary. \
+                            This could cause a sudden stop of program.')
         for key in data.keys():
             if key not in self.__dict__.keys():
                 del data[key]
@@ -41,6 +43,22 @@ class Mob:
     def make_policy(self):
         """Decide what to do (attack, move, die) via current situation"""
         pass
+
+
+@logged
+class NormalMob(Mob):
+    def __init__(self, speed, blood, images):
+        super(NormalMob, self).__init__()
+
+        if isinstance(images, dict) and len(images) == 4:
+            self.images = images
+        else:
+            if not isinstance(images, dict):
+                self.logger.error('Received a non-dict-item when initializing NormalMob instance. \
+                                This could cause ')
+
+        self.speed = speed
+        self.blood = blood
 
 
 @logged
@@ -72,6 +90,8 @@ class PlayerSkill(Skill):
         or
             PlayerSkill(str, Buff, int)
         """
+
+        super(PlayerSkill, self).__init__()
         if isinstance(image, str):
             try:
                 img_surf, img_rect = open_file('image', image)
@@ -93,8 +113,6 @@ class PlayerSkill(Skill):
                 img_rect = pygame.Rect
                 self.logger.error("The second object of the tuple given to 'image' attribute is not a \
                                 pygame.Rect instance. This could cause clicking errors.")
-
-        super(PlayerSkill, self).__init__()
         self.image_surf = img_surf
         self.image_rect = img_rect
         self.buff = buff
@@ -103,6 +121,13 @@ class PlayerSkill(Skill):
     def activate(self, player_status):
         player_status.add_buff(self.buff)
         player_status.minus_blood(self.harm)
+
+
+@logged
+class MobSkill(Skill):
+    def __init__(self):
+        # TODO: Still leaving a blank, because I don't know how to add the skill for a specific mob.
+        pass
 
 
 @logged
