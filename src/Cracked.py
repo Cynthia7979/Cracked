@@ -38,16 +38,17 @@ class Mob:
         self.blood = 0
         self.images = {'left': [], 'right': [], 'attack': [], 'die': []}
         self.pos = ()  # Abstract position
+        self.exp = 0
 
     @abc.abstractmethod
-    def make_policy(self):
+    def make_policy(self, player_status):
         """Decide what to do (attack, move, die) via current situation"""
         pass
 
 
 @logged
 class NormalMob(Mob):
-    def __init__(self, speed, blood, images):
+    def __init__(self, speed, blood, images, exp):
         super(NormalMob, self).__init__()
 
         if isinstance(images, dict) and len(images) == 4:
@@ -59,6 +60,12 @@ class NormalMob(Mob):
 
         self.speed = speed
         self.blood = blood
+        self.exp = exp
+        self.pos = (0, 0)  # Abstract position
+
+    def make_policy(self, player_status):
+        # TODO: I haven't thought about this thing, later I'll fix it
+        pass
 
 
 @logged
