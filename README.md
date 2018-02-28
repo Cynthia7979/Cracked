@@ -27,7 +27,7 @@ Concepts in game:
     `GameStatus` instance will not store any local data for any functions or other instances.
 
 4. ***Play status***.
-    A `PlayerStatus` instance contains local variables for player (e.g. floor, blood)
+    A `PlayStatus` instance contains local variables for player (e.g. floor, blood)
     This instance will be deleted anytime the player quit \"playing\",
     which means the player died or just stopped to visit achievement house or store in game.
 5. ***Scene functions***.
@@ -53,3 +53,5 @@ This will be stored in the main GameStatus instance.
 [2]I'm not sure if it's good to store a "mob status" in "player status"...
 Maybe we can find a better solution to this problem.
 Recent change: `PlayerStatus` --> `PlayStatus`
+I take the 'original mob instance' as the pre-defined Mob class instance inside another file. 
+This file may also include defined Skill class instances, and so on.
