@@ -51,4 +51,5 @@ Concepts in game:
 This will be stored in the main GameStatus instance.
 
 [2]I'm not sure if it's good to store a "mob status" in "player status"...
-Maybe we can find a better solution to this problem
+Maybe we can find a better solution to this problem.
+Recent change: `PlayerStatus` --> `PlayStatus`
