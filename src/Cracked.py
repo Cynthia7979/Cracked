@@ -14,8 +14,10 @@ def logged(class_):
 @logged
 class GameStatus:
     def __init__(self):
-        self.scene = 'loading'
+        raw_data = open_file(） # FIXME: Ended here
         self.__dict__.update({
+            'scene': 'loading',
+            
         })
         self.logger.warn('Please check the realization of initialization for class GameStatus')
 
@@ -41,7 +43,7 @@ class Mob:
         self.exp = 0
 
     @abc.abstractmethod
-    def make_policy(self, player_status):
+    def make_policy(self, play_status):
         """Decide what to do (attack, move, die) via current situation"""
         pass
 
@@ -56,16 +58,36 @@ class NormalMob(Mob):
         else:
             if not isinstance(images, dict):
                 self.logger.error('Received a non-dict-item when initializing NormalMob instance. \
-                                This could cause ')
+                                This could cause display problems')
 
         self.speed = speed
         self.blood = blood
         self.exp = exp
         self.pos = (0, 0)  # Abstract position
 
-    def make_policy(self, player_status):
+    def make_policy(self, play_status):
         # TODO: I haven't thought about this thing, later I'll fix it
         pass
+
+@logged
+class HorizVertiMoveMob(NormalMob):
+    def __init__(self, speed, blood, images, exp):
+        super(HorizVertiMoveMob, self).__init__(speed, blood, images, exp)
+        
+    def make_policy(self, play_status):
+        # TODO: Still haven't thought about it
+        pass
+ 
+@logged
+class SkillMob(NormalMob):
+    def __init__(self, speed, blood, images, exp, skill):
+        super(SkillMob, self).__init__(speed, blood, images, exp)
+        self.skill = list(skill)
+    
+    def make_policy(self, play_status):
+        # TODO
+        pass
+
 
 
 @logged
@@ -148,8 +170,8 @@ class Buff:
         self.time = time
         self.effect = {'blood': blood_effect, 'speed': speed_effect, 'harm': harm_effect}
 
-
-class PlayerStatus:
+@logged
+class PlayStatus:
     def __init__(self):
         pass  # later adding attributes
 
