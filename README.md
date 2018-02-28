@@ -26,7 +26,7 @@ Concepts in game:
     A `GameStatus` instance contains global data and variables in program.
     `GameStatus` instance will not store any local data for any functions or other instances.
 
-4. ***Player status***.
+4. ***Play status***.
     A `PlayerStatus` instance contains local variables for player (e.g. floor, blood)
     This instance will be deleted anytime the player quit \"playing\",
     which means the player died or just stopped to visit achievement house or store in game.
