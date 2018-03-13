@@ -38,19 +38,21 @@ class Mob:
 
     def __init__(self):
         self.blood = 0
-        self.images = {'left': [], 'right': [], 'attack': [], 'die': []}
+        self.images = {'walking': {'left': [], 'right': []}, 'attacking': {'left': [], 'right': []}, 'die': {'left': [], 'right': []}
         self.pos = ()  # Abstract position
         self.exp = 0
+        self.frame = 0
+        self.facing = 'left'
 
     @abc.abstractmethod
-    def make_policy(self, play_status):
+    def make_policy(self, player_status):
         """Decide what to do (attack, move, die) via current situation"""
         pass
 
 
 @logged
 class NormalMob(Mob):
-    def __init__(self, speed, blood, images, exp):
+    def __init__(self, speed, blood, images, exp, speed, harm, attack_range='middle'):
         super(NormalMob, self).__init__()
 
         if isinstance(images, dict) and len(images) == 4:
@@ -59,22 +61,71 @@ class NormalMob(Mob):
             if not isinstance(images, dict):
                 self.logger.error('Received a non-dict-item when initializing NormalMob instance. \
                                 This could cause display problems')
+            elif len(images) != 4:
+                self.logger.error('Received instance which has a not-4 length.\
+                                This could cause display problems')
 
         self.speed = speed
         self.blood = blood
         self.exp = exp
-        self.pos = (0, 0)  # Abstract position
+        self.speed = speed
+        self.attack_range = attack_range
+        self.harm = harm
+        self.state = 'walking'
+        self.pos = (0, 5)  # Abstract position
+        if attack_range == 'short':
+            self.attack_range = 3
+        elif attack_range == 'middle':
+            self.attack_range = 7
+        elif attack_range == 'long':
+            self.attack_range = 11
 
-    def make_policy(self, play_status):
-        # TODO: I haven't thought about this thing, later I'll fix it
-        pass
+    def make_policy(self, player_status):
+        # FIXME: finish me
+        if self.state == 'die':
+            self.frame += 1
+        else:
+            if self.blood <= 0:
+                self.state = 'die'
+            elif player_status.pos[0] - self.pos[0] > self.attack_range:
+                if self.facing != 'right':
+                    x = self.pos[0] - self.speed
+                    y = self.pos[1]
+                    self.state = 'walking'
+                    self.facing = 'right'
+                    self.frame = 0
+                else:
+                    self.frame += 1
+            elif -(player_status.pos[0] - self.pos[0]) > self.attack_range:
+                if self.facing != 'left':
+                    x = self.pos[0] + self.speed
+                    y = self.pos[1]
+                    self.state = 'walking'
+                    self.facing = 'left'
+                    self.frame = 0
+                else:
+                    self.frame += 1
+            else: # attack
+                if self.state == 'attacking': # just attacking
+                    self.frame += 1
+                else:
+                    self.state = 'attacking'
+        images = self.images[self.state][self.facing]
+        if self.state == 'attacking': harm = self.harm / len(images)
+        else: harm = 0
+        if self.frame > len(images):
+            if self.state == 'die':
+                return (None, None)
+            else:
+                return (images[self.frame], 0)
+
 
 @logged
 class HorizVertiMoveMob(NormalMob):
     def __init__(self, speed, blood, images, exp):
         super(HorizVertiMoveMob, self).__init__(speed, blood, images, exp)
         
-    def make_policy(self, play_status):
+    def make_policy(self, player_status):
         # TODO: Still haven't thought about it
         pass
  
@@ -84,7 +135,7 @@ class SkillMob(NormalMob):
         super(SkillMob, self).__init__(speed, blood, images, exp)
         self.skill = list(skill)
     
-    def make_policy(self, play_status):
+    def make_policy(self, player_status):
         # TODO
         pass
 
@@ -171,7 +222,7 @@ class Buff:
         self.effect = {'blood': blood_effect, 'speed': speed_effect, 'harm': harm_effect}
 
 @logged
-class PlayStatus:
+class PlayerStatus:
     def __init__(self):
         pass  # later adding attributes
 
