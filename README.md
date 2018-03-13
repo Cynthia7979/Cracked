@@ -7,9 +7,10 @@ Concepts in game:
 ---
 1. ***Abstract position***.
     For every floor, (0,0) is at the bottom left.
-    If every floor has an axb size, then `bottom right = (a,0), top left = (0,b), top right = (a,b)
+    If every floor has an axb size, then `bottom right = (a,0), top left = (0,b), top right = (a,b)`
+    I decided to give every floor a 50x30 size. Change if needed.
     ```
-    (0, b)                             (a, b)
+    (0, 30)                             (50, 30)
     ┌────────────────────────────────────┐
     │                                    │
     │                                    │
@@ -17,7 +18,7 @@ Concepts in game:
     │           ┌────────┐               │
     │           │ thing  │               │
     └────────────────────────────────────┘
-    (0, 0)                             (0, a）
+    (0, 0)                             (0, 50）
     ```
 2. ***Screen position***.
     A screen position is the real position we use to `blit` surface objects.
