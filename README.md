@@ -41,10 +41,10 @@ Concepts in game:
                 # Do something...
                 game_status.update(changed_things)
 
-6. ***Mob status***.
-    Mob status will be a list stored in current `PlayerStatus` instance.
-    It will contain mob instances on current floor.
-    These mobs can be changed or deleted because they are copies of the original mob instances.[2]
+6. ***MobStatus***.
+    `MobStatus` will be a class which stores all Mob instances on the current floor.
+    Its instance will be created by `play_scene()` function while the player start a new game.
+    Its method will be "responsible" for calling the `make_policy()` method of every Mob instance on the floor.
 ---
 #### Footnotes
 [1]To calculate screen position, we must know where the origin(0,0) of the floor is.
@@ -53,5 +53,6 @@ This will be stored in the main GameStatus instance.
 [2]I'm not sure if it's good to store a "mob status" in "player status"...
 Maybe we can find a better solution to this problem.
 Recent change: `PlayerStatus` --> `PlayStatus`
+Current change: `PlayStatus` --> `PlayerStatus` and add `MobStatus`
 I take the 'original mob instance' as the pre-defined Mob class instance inside another file. 
 This file may also include defined Skill class instances, and so on.
